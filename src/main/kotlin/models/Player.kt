@@ -21,6 +21,8 @@ class Player(
 
     var isChanneling: Boolean = false
 
+    var hasSeenInitialTeaching: Boolean = false
+
     val unlockedSpells: MutableList<Spell> = mutableListOf()
     private val spellCooldowns: MutableMap<Spell, Long> = mutableMapOf()
 
@@ -127,7 +129,8 @@ class Player(
         return PlayerProgress(
             level = level,
             experience = experience,
-            unlockedSpellNames = unlockedSpells.map { it.name }
+            unlockedSpellNames = unlockedSpells.map { it.name },
+            hasSeenInitialTeaching = hasSeenInitialTeaching
         )
     }
 
@@ -136,6 +139,7 @@ class Player(
             val player = Player(name, stats)
             player.level = progress.level
             player.experience = progress.experience
+            player.hasSeenInitialTeaching = progress.hasSeenInitialTeaching
 
             // Restore unlocked spells
             player.unlockedSpells.clear()

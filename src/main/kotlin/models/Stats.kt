@@ -14,5 +14,6 @@ data class Stats(
 data class PlayerProgress(
     val level: Int,
     val experience: Int,
-    val unlockedSpellNames: List<String>
+    val unlockedSpellNames: List<String>,
+    val hasSeenInitialTeaching: Boolean = false
 )

@@ -33,6 +33,10 @@ class Game {
     }
 
     private suspend fun startNewGame() {
+        // Check if player has seen initial teaching before
+        val previousProgress = progressManager.loadProgress()
+        val hasSeenTeaching = previousProgress?.hasSeenInitialTeaching ?: false
+
         // Create new player
         val stats = Stats(
             maxHealth = 100,
@@ -42,6 +46,18 @@ class Game {
         )
 
         player = Player("Hero", stats)
+
+        // Show initial teaching on first playthrough only
+        if (!hasSeenTeaching) {
+            renderer.renderInitialTeaching()
+            readLine()
+
+            // Mark as seen and save
+            player?.let { currentPlayer ->
+                currentPlayer.hasSeenInitialTeaching = true
+                progressManager.saveProgress(currentPlayer)
+            }
+        }
 
         // Start game loop
         gameLoop()
