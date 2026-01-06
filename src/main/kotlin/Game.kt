@@ -57,6 +57,9 @@ class Game {
                 currentPlayer.hasSeenInitialTeaching = true
                 progressManager.saveProgress(currentPlayer)
             }
+
+            // Small delay to prevent input buffer issues
+            delay(100)
         }
 
         // Start game loop
@@ -97,6 +100,9 @@ class Game {
     private suspend fun showHowToPlay() {
         renderer.renderHowToPlay()
         readLine()
+
+        // Small delay to prevent input buffer issues
+        delay(100)
     }
 
     private suspend fun gameLoop() {
@@ -116,6 +122,9 @@ class Game {
                 renderer.renderVictory(currentPlayer, enemy)
                 readLine()
 
+                // Small delay to prevent input buffer issues
+                delay(100)
+
                 // Gain experience
                 val leveledUp = currentPlayer.addExperience(enemy.expReward)
 
@@ -124,6 +133,9 @@ class Game {
                     val newSpell = SpellRegistry.getSpellForLevel(currentPlayer.level)
                     renderer.renderLevelUp(currentPlayer, newSpell)
                     readLine()
+
+                    // Small delay to prevent input buffer issues
+                    delay(100)
                 }
 
                 // Save progress
@@ -133,6 +145,9 @@ class Game {
                 // Defeat
                 renderer.renderDefeat(currentPlayer)
                 readLine()
+
+                // Small delay to prevent input buffer issues
+                delay(100)
 
                 // Rogue-lite: reset but keep spells
                 currentPlayer.reset()

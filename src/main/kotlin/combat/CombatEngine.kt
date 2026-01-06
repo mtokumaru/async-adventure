@@ -22,7 +22,7 @@ class CombatEngine(
 
     suspend fun runCombat(): Boolean {
         combatLog.add("Combat begins! Fight!")
-        combatLog.add("Queue multiple actions per turn with action points!")
+        combatLog.add("Type a spell number [1-8] to cast it!")
         combatLog.add("   ⚡ = Concurrent (runs in parallel) | 🔄 = Sequential (runs one-by-one)")
 
         // Render initial state

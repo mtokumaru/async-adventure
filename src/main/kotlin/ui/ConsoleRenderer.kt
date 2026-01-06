@@ -87,10 +87,7 @@ class ConsoleRenderer {
         println("    Each spell teaches a different coroutine concept.")
         println()
         println("  ${bold("CONTROLS:")}")
-        println("    • Press [1-8] to ${bold("queue")} spells (uses action points)")
-        println("    • Press ${GameColors.READY("ENTER")} to ${bold("execute")} queued actions")
-        println("    • Press 'U' to undo last queued action")
-        println("    • Press 'C' to clear action queue")
+        println("    • Press [1-8] to ${bold("cast")} spells (executes immediately)")
         println("    • Type 'Q' to quit")
         println("    • Type '?' for help during combat")
         println()
@@ -167,9 +164,9 @@ class ConsoleRenderer {
 
             if (!actionQueue.isEmpty) {
                 println(GameColors.READY("  📋 QUEUED: ${actionQueue.getActionSummary()}"))
-                println("     Press ${GameColors.READY("ENTER")} to execute, ${GameColors.DAMAGE("U")} to undo, ${GameColors.DAMAGE("C")} to clear")
+                println("     Actions will execute automatically")
             } else {
-                println("  Queue actions with using comma separated spell numbers, then press ${GameColors.READY("ENTER")} to execute")
+                println("  Type a spell number [1-8] to cast it")
             }
         }
 

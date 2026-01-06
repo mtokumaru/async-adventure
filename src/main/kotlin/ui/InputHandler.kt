@@ -61,8 +61,12 @@ class InputHandler(
                     combatEngine?.let { engine ->
                         if (engine.queueAction(spellIndex)) {
                             val spell = engine.player.unlockedSpells[spellIndex]
-                            engine.addLogMessage("➕ Queued: ${spell.name} (${spell.actionPointCost} AP)")
-                            engine.addLogMessage("   Queue: ${engine.actionQueue.getActionSummary()} | AP: ${engine.actionQueue.actionPointsUsed}/${engine.actionQueue.maxActionPoints}")
+                            engine.addLogMessage("✨ Casting: ${spell.name} (${spell.actionPointCost} AP)")
+
+                            // Auto-execute the queued action immediately
+                            scope.launch {
+                                engine.executeQueuedActions()
+                            }
                         }
                     }
                 }
