@@ -50,9 +50,18 @@ class ConsoleRenderer {
         println("    Each spell teaches a different coroutine concept.")
         println()
         println("  ${bold("CONTROLS:")}")
-        println("    • Press [1-8] to cast spells")
-        println("    • Type 'q' to quit")
+        println("    • Press [1-8] to ${bold("queue")} spells (uses action points)")
+        println("    • Press ${GameColors.READY("ENTER")} to ${bold("execute")} queued actions")
+        println("    • Press 'U' to undo last queued action")
+        println("    • Press 'C' to clear action queue")
+        println("    • Type 'Q' to quit")
         println("    • Type '?' for help during combat")
+        println()
+        println("  ${bold("ACTION POINTS (NEW!):")}")
+        println("    • Each turn you have 5 action points (AP)")
+        println("    • ⚡ Concurrent spells run in ${GameColors.TEACHING("parallel")} (e.g., 2× Fireball)")
+        println("    • 🔄 Sequential spells run ${GameColors.DAMAGE("one-by-one")} (e.g., 3× Melee)")
+        println("    • Mix & match to see the difference!")
         println()
         println("  ${bold("ROGUE-LITE MECHANICS:")}")
         println("    • When you die, you keep all unlocked spells!")
@@ -77,7 +86,8 @@ class ConsoleRenderer {
         player: Player,
         enemy: Enemy,
         combatLog: List<String>,
-        round: Int
+        round: Int,
+        actionQueue: combat.ActionQueue? = null
     ) {
         clearScreen()
 
@@ -109,15 +119,32 @@ class ConsoleRenderer {
 
         println()
 
+        // Action Points & Queue
+        if (actionQueue != null) {
+            println(GameColors.BORDER("═".repeat(65)))
+            val apUsed = actionQueue.actionPointsUsed
+            val apMax = actionQueue.maxActionPoints
+            val apRemaining = actionQueue.actionPointsRemaining
+            val apBar = "█".repeat(apUsed) + "░".repeat(apRemaining)
+            println(GameColors.BORDER("  ACTION POINTS: ") + GameColors.TEACHING(apBar) + " $apUsed/$apMax")
+
+            if (!actionQueue.isEmpty) {
+                println(GameColors.READY("  📋 QUEUED: ${actionQueue.getActionSummary()}"))
+                println("     Press ${GameColors.READY("ENTER")} to execute, ${GameColors.DAMAGE("U")} to undo, ${GameColors.DAMAGE("C")} to clear")
+            } else {
+                println("  Queue actions with [1-8], then press ${GameColors.READY("ENTER")} to execute")
+            }
+        }
+
         // Spell bar
         println(GameColors.BORDER("═".repeat(65)))
         println(GameColors.BORDER("  SPELL BAR:"))
-        renderSpellBar(player.unlockedSpells, player)
+        renderSpellBar(player.unlockedSpells, player, actionQueue)
 
-        // Combat log (last 8 messages)
+        // Combat log (last 10 messages to show execution details)
         println(GameColors.BORDER("═".repeat(65)))
         println(GameColors.BORDER("  COMBAT LOG:"))
-        combatLog.takeLast(8).forEach { msg ->
+        combatLog.takeLast(10).forEach { msg ->
             println("  $msg")
         }
         println(GameColors.BORDER("═".repeat(65)))
@@ -145,13 +172,15 @@ class ConsoleRenderer {
         println(" ".repeat(40) + "MP: ${GameColors.MANA(filled + empty)} $current/$max")
     }
 
-    private fun renderSpellBar(spells: List<Spell>, player: Player) {
+    private fun renderSpellBar(spells: List<Spell>, player: Player, actionQueue: combat.ActionQueue? = null) {
         spells.forEachIndexed { index, spell ->
             val key = index + 1
             val status = getSpellStatus(spell, player)
+            val apCost = "${spell.actionPointCost}AP"
+            val concurrency = if (spell.isConcurrent) "⚡" else "🔄"
             val teachingNote = getTeachingNote(spell)
 
-            println("  [$key] ${spell.name.padEnd(18)} ${status.padEnd(25)} $teachingNote")
+            println("  [$key] ${spell.name.padEnd(18)} ${apCost.padEnd(4)} $concurrency ${status.padEnd(20)} $teachingNote")
         }
     }
 

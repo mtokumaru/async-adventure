@@ -184,7 +184,7 @@ class CombatEngineTest {
         advanceUntilIdle()
         combatJob.cancel()
 
-        verify(atLeast = 1) { renderer.renderCombatScreen(any(), any(), any(), any()) }
+        verify(atLeast = 1) { renderer.renderCombatScreen(any(), any(), any(), any(), any()) }
     }
 
     @Test
@@ -278,5 +278,73 @@ class CombatEngineTest {
 
         assertEquals(20, player.shieldHealth)
         assertEquals(100, player.health) // Health unchanged
+    }
+
+    @Test
+    fun `combat does not infinite loop waiting for player input`() = testScope.runTest {
+        // This test verifies the infinite loop bug is fixed
+        var renderCallCount = 0
+
+        // Track render calls
+        every { renderer.renderCombatScreen(any(), any(), any(), any(), any()) } answers {
+            renderCallCount++
+        }
+
+        // Launch combat
+        val combatJob = launch {
+            combatEngine.runCombat()
+        }
+
+        // Wait for initial render
+        advanceTimeBy(200)
+        val initialRenderCount = renderCallCount
+
+        // Wait a bit more - in the buggy version, render would be called repeatedly
+        advanceTimeBy(500)
+        val finalRenderCount = renderCallCount
+
+        combatJob.cancel()
+
+        // Calculate how many extra renders happened
+        val extraRenders = finalRenderCount - initialRenderCount
+
+        // If we have more than 1 extra render in 500ms, there's likely an infinite loop
+        // (allowing 1 for potential state update)
+        assertTrue(
+            extraRenders <= 1,
+            "Infinite loop detected! Render was called $extraRenders extra times in 500ms. " +
+            "Combat should wait for player action, not spin in a loop."
+        )
+    }
+
+    @Test
+    fun `combat waits properly between player turns`() = testScope.runTest {
+        // Track combat state over time
+        var renderCount = 0
+        every { renderer.renderCombatScreen(any(), any(), any(), any(), any()) } answers {
+            renderCount++
+            callOriginal()
+        }
+
+        val combatJob = launch {
+            combatEngine.runCombat()
+        }
+
+        // Initial render
+        advanceTimeBy(200)
+        val initialRenderCount = renderCount
+
+        // Wait without player action - render should NOT keep happening
+        advanceTimeBy(500)
+        val afterWaitRenderCount = renderCount
+
+        combatJob.cancel()
+
+        // Should not render many times while waiting for player input
+        val extraRenders = afterWaitRenderCount - initialRenderCount
+        assertTrue(
+            extraRenders <= 1,
+            "Combat rendered $extraRenders extra times while waiting for player. Should be waiting, not looping."
+        )
     }
 }

@@ -30,20 +30,52 @@ class InputHandler(
             trimmed == "?" || trimmed == "help" -> {
                 inputCallback?.invoke("help")
             }
+            trimmed == "x" || trimmed == "execute" -> {
+                // Execute queued actions
+                combatEngine?.let { engine ->
+                    scope.launch {
+                        engine.executeQueuedActions()
+                    }
+                }
+            }
+            trimmed == "c" || trimmed == "clear" -> {
+                // Clear action queue
+                combatEngine?.actionQueue?.clear()
+                combatEngine?.addLogMessage("🗑️  Action queue cleared")
+            }
+            trimmed == "u" || trimmed == "undo" -> {
+                // Remove last queued action
+                combatEngine?.let { engine ->
+                    val removed = engine.actionQueue.removeLastAction()
+                    if (removed != null) {
+                        engine.addLogMessage("↩️  Removed ${removed.spell.name} from queue")
+                    } else {
+                        engine.addLogMessage("⚠️ Nothing to undo")
+                    }
+                }
+            }
             trimmed.matches(Regex("\\d")) -> {
-                // Spell number (1-8)
+                // Queue spell number (1-8)
                 val spellIndex = trimmed.toIntOrNull()?.minus(1)
                 if (spellIndex != null) {
                     combatEngine?.let { engine ->
-                        scope.launch {
-                            engine.castSpell(spellIndex)
+                        if (engine.queueAction(spellIndex)) {
+                            val spell = engine.player.unlockedSpells[spellIndex]
+                            engine.addLogMessage("➕ Queued: ${spell.name} (${spell.actionPointCost} AP)")
+                            engine.addLogMessage("   Queue: ${engine.actionQueue.getActionSummary()} | AP: ${engine.actionQueue.actionPointsUsed}/${engine.actionQueue.maxActionPoints}")
                         }
                     }
                 }
             }
             trimmed.isEmpty() -> {
-                // Enter key - just acknowledge
-                inputCallback?.invoke("enter")
+                // Enter key - execute queued actions if any
+                combatEngine?.let { engine ->
+                    scope.launch {
+                        if (!engine.actionQueue.isEmpty) {
+                            engine.executeQueuedActions()
+                        }
+                    }
+                }
             }
             else -> {
                 inputCallback?.invoke("unknown")

@@ -11,6 +11,8 @@ sealed interface Spell {
     val cooldown: Long  // milliseconds
     val castTime: Long  // milliseconds for visualization
     val description: String
+    val actionPointCost: Int  // Action points required to cast
+    val isConcurrent: Boolean  // Whether multiple casts can run concurrently
 
     suspend fun cast(caster: Player, target: Enemy, scope: CoroutineScope, combatLog: MutableList<String>)
 }
@@ -22,9 +24,11 @@ data object MeleeAttack : Spell {
     override val cooldown = 0L
     override val castTime = 0L
     override val description = "Instant physical attack (synchronous)"
+    override val actionPointCost = 1
+    override val isConcurrent = false  // Sequential execution
 
     override suspend fun cast(caster: Player, target: Enemy, scope: CoroutineScope, combatLog: MutableList<String>) {
-        // No suspension - instant
+        // No suspension - instant but blocks
         target.takeDamage(10)
         combatLog.add("⚔️ You strike for 10 damage!")
     }
@@ -37,6 +41,8 @@ data object Fireball : Spell {
     override val cooldown = 3000L
     override val castTime = 1500L
     override val description = "Channeled fire spell (launch)"
+    override val actionPointCost = 2
+    override val isConcurrent = true  // Can launch multiple concurrently!
 
     override suspend fun cast(caster: Player, target: Enemy, scope: CoroutineScope, combatLog: MutableList<String>) {
         caster.isChanneling = true
@@ -55,6 +61,8 @@ data object IceBolt : Spell {
     override val cooldown = 4000L
     override val castTime = 1000L
     override val description = "Lifesteal spell (async/await)"
+    override val actionPointCost = 2
+    override val isConcurrent = true  // Can run concurrently
 
     override suspend fun cast(caster: Player, target: Enemy, scope: CoroutineScope, combatLog: MutableList<String>) {
         val healthGained = scope.async {
@@ -78,6 +86,8 @@ data object LightningChain : Spell {
     override val cooldown = 5000L
     override val castTime = 500L
     override val description = "Multi-target parallel attacks (multiple launch)"
+    override val actionPointCost = 3
+    override val isConcurrent = true  // Parallel execution
 
     override suspend fun cast(caster: Player, target: Enemy, scope: CoroutineScope, combatLog: MutableList<String>) {
         // For simplicity, hit the same target 3 times with delays
@@ -103,6 +113,8 @@ data object PoisonCloud : Spell {
     override val cooldown = 5000L
     override val castTime = 2500L
     override val description = "DoT effect using Flow"
+    override val actionPointCost = 2
+    override val isConcurrent = true  // Flow can run concurrently
 
     override suspend fun cast(caster: Player, target: Enemy, scope: CoroutineScope, combatLog: MutableList<String>) {
         combatLog.add("💀 Poison Cloud applied! // flow { emit(...) }.collect { }")
@@ -130,6 +142,8 @@ data object ShieldBarrier : Spell {
     override val cooldown = 8000L
     override val castTime = 500L
     override val description = "Absorbs damage until broken or timeout"
+    override val actionPointCost = 2
+    override val isConcurrent = true  // Job can run in background
 
     override suspend fun cast(caster: Player, target: Enemy, scope: CoroutineScope, combatLog: MutableList<String>) {
         combatLog.add("🛡️ Shield activated! // Job + withTimeout + cancellation")
@@ -164,6 +178,8 @@ data object TimeWarp : Spell {
     override val cooldown = 10000L
     override val castTime = 2000L
     override val description = "Complex calculation on background thread"
+    override val actionPointCost = 3
+    override val isConcurrent = true  // withContext switches dispatcher
 
     override suspend fun cast(caster: Player, target: Enemy, scope: CoroutineScope, combatLog: MutableList<String>) {
         combatLog.add("⏰ Calculating... // withContext(Dispatchers.Default)")
@@ -192,6 +208,8 @@ data object ChannelBlitz : Spell {
     override val cooldown = 12000L
     override val castTime = 2000L
     override val description = "Fast attacks using Channel"
+    override val actionPointCost = 3
+    override val isConcurrent = true  // Channel runs concurrently
 
     override suspend fun cast(caster: Player, target: Enemy, scope: CoroutineScope, combatLog: MutableList<String>) {
         combatLog.add("⚡ Channel Blitz! // Channel producer-consumer")
