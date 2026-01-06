@@ -30,7 +30,7 @@ class Player(
 
     init {
         // Start with Melee Attack
-        unlockedSpells.add(MeleeAttack)
+        unlockedSpells.add(Shockwave)
     }
 
     fun takeDamage(amount: Int) {

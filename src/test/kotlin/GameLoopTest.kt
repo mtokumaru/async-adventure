@@ -1,6 +1,5 @@
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.*
 import models.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -228,7 +227,7 @@ class GameLoopTest {
     @Test
     fun `player can cast spell when mana and cooldown allow`() {
         player = Player("Hero", stats)
-        val spell = MeleeAttack
+        val spell = Shockwave
 
         assertTrue(player.canCastSpell(spell))
     }

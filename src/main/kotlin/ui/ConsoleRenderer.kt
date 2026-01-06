@@ -1,6 +1,5 @@
 package ui
 
-import com.github.ajalt.mordant.rendering.TextColors.*
 import com.github.ajalt.mordant.rendering.TextStyles.*
 import com.github.ajalt.mordant.terminal.Terminal
 import models.Enemy
@@ -209,7 +208,7 @@ class ConsoleRenderer {
 
     private fun getTeachingNote(spell: Spell): String {
         return when (spell) {
-            is MeleeAttack -> dim("[synchronous]")
+            is Shockwave -> dim("[synchronous]")
             is Fireball -> dim("[launch coroutine]")
             is IceBolt -> dim("[async/await]")
             is LightningChain -> dim("[parallel launch]")
@@ -258,7 +257,7 @@ class ConsoleRenderer {
 
         // Get the teaching content based on spell type
         val teachingText = when (spell) {
-            is MeleeAttack -> UiText.SpellUnlock.MeleeAttack.teaching
+            is Shockwave -> UiText.SpellUnlock.MeleeAttack.teaching
             is Fireball -> UiText.SpellUnlock.Fireball.teaching
             is IceBolt -> UiText.SpellUnlock.IceBolt.teaching
             is LightningChain -> UiText.SpellUnlock.LightningChain.teaching

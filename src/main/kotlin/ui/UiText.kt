@@ -40,7 +40,7 @@ object UiText {
 
               You've begun your journey with your first ability:
 
-              ✨ MELEE ATTACK - Synchronous Operations
+              ✨ SHOCKWAVE - Synchronous Operations
 
               💡 Key Concept: Synchronous (Blocking) Execution
                  In synchronous code, operations run one-at-a-time.
@@ -57,9 +57,6 @@ object UiText {
                  // Total time: sum of all operations
 
               Limitation: Can't do multiple things at once!
-
-              Real-world analogy: Like waiting in line at a coffee shop -
-              only one person can be served at a time.
 
               As you level up, you'll unlock spells that use Kotlin coroutines
               to overcome these limitations!

@@ -8,6 +8,7 @@ import kotlin.random.Random
 sealed interface Spell {
     val name: String
     val manaCost: Int
+    val damage: Int get() = 10
     val cooldown: Long  // milliseconds
     val castTime: Long  // milliseconds for visualization
     val description: String
@@ -17,20 +18,21 @@ sealed interface Spell {
     suspend fun cast(caster: Player, target: Enemy, scope: CoroutineScope, combatLog: MutableList<String>)
 }
 
-// 1. Melee Attack - Synchronous (no coroutines)
-data object MeleeAttack : Spell {
-    override val name = "Melee Attack"
+// 1. Physical Attack - Synchronous (no coroutines)
+data object Shockwave : Spell {
+    override val name = "Sync Blast"
     override val manaCost = 0
+    override val damage = 25
     override val cooldown = 0L
     override val castTime = 0L
-    override val description = "Instant physical attack (synchronous)"
-    override val actionPointCost = 1
+    override val description = "Blasts the enemy (synchronous)"
+    override val actionPointCost = 5
     override val isConcurrent = false  // Sequential execution
 
     override suspend fun cast(caster: Player, target: Enemy, scope: CoroutineScope, combatLog: MutableList<String>) {
         // No suspension - instant but blocks
-        target.takeDamage(10)
-        combatLog.add("⚔️ You strike for 10 damage!")
+        target.takeDamage(damage)
+        combatLog.add("⚔️ You strike for $damage damage!")
     }
 }
 
@@ -38,19 +40,20 @@ data object MeleeAttack : Spell {
 data object Fireball : Spell {
     override val name = "Fireball"
     override val manaCost = 15
+    override val damage = 10
     override val cooldown = 3000L
     override val castTime = 1500L
     override val description = "Channeled fire spell (launch)"
-    override val actionPointCost = 2
+    override val actionPointCost = 1
     override val isConcurrent = true  // Can launch multiple concurrently!
 
     override suspend fun cast(caster: Player, target: Enemy, scope: CoroutineScope, combatLog: MutableList<String>) {
         caster.isChanneling = true
         combatLog.add("🔥 Channeling Fireball... // scope.launch { delay(1500) }")
         delay(1500)  // 1.5s cast time
-        target.takeDamage(25)
+        target.takeDamage(damage)
         caster.isChanneling = false
-        combatLog.add("🔥 Fireball hits for 25 damage!")
+        combatLog.add("🔥 Fireball hits for $damage damage!")
     }
 }
 
@@ -241,7 +244,7 @@ data object ChannelBlitz : Spell {
 // Spell registry for lookup by name
 object SpellRegistry {
     private val spells = listOf(
-        MeleeAttack,
+        Shockwave,
         Fireball,
         IceBolt,
         LightningChain,
@@ -256,12 +259,12 @@ object SpellRegistry {
     }
 
     fun getStartingSpells(): List<Spell> {
-        return listOf(MeleeAttack)
+        return listOf(Shockwave)
     }
 
     fun getSpellForLevel(level: Int): Spell? {
         return when (level) {
-            1 -> MeleeAttack
+            1 -> Shockwave
             2 -> Fireball
             3 -> IceBolt
             4 -> LightningChain
