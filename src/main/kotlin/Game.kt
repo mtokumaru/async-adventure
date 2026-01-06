@@ -15,10 +15,10 @@ class Game {
     suspend fun start() {
         while (isRunning) {
             renderer.renderMainMenu()
-            val input = readLine()?.trim()?.lowercase()
+            val input = readLine()?.trim()?.lowercase() ?: ""
 
             when (input) {
-                "1" -> startNewGame()
+                "", "1" -> startNewGame()  // Empty input (Enter) selects default option 1
                 "2" -> showHowToPlay()
                 "q", "quit" -> {
                     isRunning = false

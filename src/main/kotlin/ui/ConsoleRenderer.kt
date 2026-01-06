@@ -30,10 +30,11 @@ class ConsoleRenderer {
         println("  gameplay mechanics. Unlock new spells that teach different")
         println("  coroutine concepts!")
         println()
-        println(GameColors.READY("  [1] Start New Game"))
+        println(GameColors.READY("  [1] Start New Game") + dim(" (default)"))
         println("  [2] How to Play")
         println("  [Q] Quit")
         println()
+        println(dim("  Press Enter to start, or type a number to select"))
         println(GameColors.HEADER("╚═══════════════════════════════════════════════════════════════╝"))
         print("> ")
     }
