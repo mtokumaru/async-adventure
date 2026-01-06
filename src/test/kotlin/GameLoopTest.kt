@@ -322,6 +322,29 @@ class GameLoopTest {
     }
 
     @Test
+    fun `player progress can be saved and restored`() {
+        player = Player("Hero", stats)
+
+        // Level up and unlock spells
+        player.addExperience(100) // Level 2
+        player.addExperience(200) // Level 3
+
+        // Save progress
+        val progress = player.toProgress()
+
+        assertEquals(3, progress.level)
+        assertEquals(0, progress.experience)
+        assertEquals(3, progress.unlockedSpellNames.size)
+
+        // Create new player from progress
+        val restoredPlayer = Player.fromProgress("Hero", progress, stats)
+
+        assertEquals(3, restoredPlayer.level)
+        assertEquals(3, restoredPlayer.unlockedSpells.size)
+        assertTrue(restoredPlayer.unlockedSpells.any { it.name == "Ice Bolt" })
+    }
+
+    @Test
     fun `spell registry returns correct spell for level`() {
         assertEquals("Melee Attack", SpellRegistry.getSpellForLevel(1)?.name)
         assertEquals("Fireball", SpellRegistry.getSpellForLevel(2)?.name)

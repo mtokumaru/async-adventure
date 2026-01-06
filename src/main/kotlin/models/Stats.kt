@@ -9,3 +9,10 @@ data class Stats(
     val attack: Int,
     val defense: Int
 )
+
+@Serializable
+data class PlayerProgress(
+    val level: Int,
+    val experience: Int,
+    val unlockedSpellNames: List<String>
+)

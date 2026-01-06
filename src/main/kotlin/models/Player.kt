@@ -122,4 +122,31 @@ class Player(
         activeShield = null
         isChanneling = false
     }
+
+    fun toProgress(): PlayerProgress {
+        return PlayerProgress(
+            level = level,
+            experience = experience,
+            unlockedSpellNames = unlockedSpells.map { it.name }
+        )
+    }
+
+    companion object {
+        fun fromProgress(name: String, progress: PlayerProgress, stats: Stats): Player {
+            val player = Player(name, stats)
+            player.level = progress.level
+            player.experience = progress.experience
+
+            // Restore unlocked spells
+            player.unlockedSpells.clear()
+            progress.unlockedSpellNames.forEach { spellName ->
+                val spell = SpellRegistry.getSpellByName(spellName)
+                if (spell != null) {
+                    player.unlockedSpells.add(spell)
+                }
+            }
+
+            return player
+        }
+    }
 }

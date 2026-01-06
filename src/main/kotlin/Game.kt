@@ -1,6 +1,7 @@
 import combat.CombatEngine
 import kotlinx.coroutines.*
 import models.*
+import persistence.ProgressManager
 import ui.ConsoleRenderer
 import ui.InputHandler
 
@@ -8,6 +9,7 @@ class Game {
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private val renderer = ConsoleRenderer()
     private val inputHandler = InputHandler(scope)
+    private val progressManager = ProgressManager()
 
     private var player: Player? = null
     private var isRunning = true
@@ -19,7 +21,8 @@ class Game {
 
             when (input) {
                 "", "1" -> startNewGame()  // Empty input (Enter) selects default option 1
-                "2" -> showHowToPlay()
+                "2" -> continueGame()
+                "3" -> showHowToPlay()
                 "q", "quit" -> {
                     isRunning = false
                     renderer.renderMessage("Thanks for playing!")
@@ -39,6 +42,37 @@ class Game {
         )
 
         player = Player("Hero", stats)
+
+        // Start game loop
+        gameLoop()
+    }
+
+    private suspend fun continueGame() {
+        if (!progressManager.hasSaveFile()) {
+            renderer.renderMessage("No save file found!")
+            delay(2000)
+            return
+        }
+
+        val progress = progressManager.loadProgress()
+        if (progress == null) {
+            renderer.renderMessage("Failed to load save file!")
+            delay(2000)
+            return
+        }
+
+        // Create player from progress
+        val stats = Stats(
+            maxHealth = 100,
+            maxMana = 100,
+            attack = 10,
+            defense = 5
+        )
+
+        player = Player.fromProgress("Hero", progress, stats)
+
+        renderer.renderMessage("Progress loaded! Level ${progress.level} with ${progress.unlockedSpellNames.size} spells")
+        delay(2000)
 
         // Start game loop
         gameLoop()
@@ -76,6 +110,9 @@ class Game {
                     readLine()
                 }
 
+                // Save progress
+                progressManager.saveProgress(currentPlayer)
+
             } else {
                 // Defeat
                 renderer.renderDefeat(currentPlayer)
@@ -83,6 +120,7 @@ class Game {
 
                 // Rogue-lite: reset but keep spells
                 currentPlayer.reset()
+                progressManager.saveProgress(currentPlayer)
 
                 // Return to main menu
                 keepPlaying = false
