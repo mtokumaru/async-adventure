@@ -54,7 +54,7 @@ class InputHandler(
                     }
                 }
             }
-            trimmed.matches(Regex("\\d")) -> {
+            trimmed.matches(Regex("^\\d+(,\\d+)*,?$")) -> {
                 // Queue spell number (1-8)
                 val spellIndex = trimmed.toIntOrNull()?.minus(1)
                 if (spellIndex != null) {

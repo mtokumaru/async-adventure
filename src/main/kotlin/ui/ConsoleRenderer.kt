@@ -26,11 +26,11 @@ class ConsoleRenderer {
         println(GameColors.HEADER("║              Learn Coroutines Through Combat!                 ║"))
         println(GameColors.HEADER("╠═══════════════════════════════════════════════════════════════╣"))
         println()
-        println("  A rogue-lite RPG where you learn Kotlin coroutines through")
+        println("  An RPG where you learn some Kotlin coroutine concepts through")
         println("  gameplay mechanics. Unlock new spells that teach different")
         println("  coroutine concepts!")
         println()
-        println(GameColors.READY("  [1] Start New Game") + dim(" (default)"))
+        println(GameColors.READY("  [1] Start New Game"))
         println("  [2] How to Play")
         println("  [Q] Quit")
         println()
@@ -132,7 +132,7 @@ class ConsoleRenderer {
                 println(GameColors.READY("  📋 QUEUED: ${actionQueue.getActionSummary()}"))
                 println("     Press ${GameColors.READY("ENTER")} to execute, ${GameColors.DAMAGE("U")} to undo, ${GameColors.DAMAGE("C")} to clear")
             } else {
-                println("  Queue actions with [1-8], then press ${GameColors.READY("ENTER")} to execute")
+                println("  Queue actions with using comma separated spell numbers, then press ${GameColors.READY("ENTER")} to execute")
             }
         }
 
