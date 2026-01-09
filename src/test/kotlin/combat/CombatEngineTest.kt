@@ -188,14 +188,14 @@ class CombatEngineTest {
     }
 
     @Test
-    fun `melee attack is instant and synchronous`() = testScope.runTest {
+    fun `sync blast is instant and synchronous`() = testScope.runTest {
         player.mana = 100
         val initialHealth = enemy.health
 
-        combatEngine.castSpell(0) // Melee attack
+        combatEngine.castSpell(0) // Sync Blast
 
         // Should be instant - no need to advance time
-        assertEquals(initialHealth - 10, enemy.health)
+        assertEquals(initialHealth - 25, enemy.health)
     }
 
     @Test

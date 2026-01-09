@@ -192,6 +192,6 @@ class InputHandlingTest {
         // immediately after queueing
 
         assertTrue(newPlayer.unlockedSpells.size >= 1, "Player should have at least one spell")
-        assertEquals("Melee Attack", newPlayer.unlockedSpells[0].name)
+        assertEquals("Sync Blast", newPlayer.unlockedSpells[0].name)
     }
 }

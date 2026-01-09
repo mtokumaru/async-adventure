@@ -20,72 +20,19 @@ class ConsoleRenderer {
 
     fun renderMainMenu() {
         clearScreen()
-        println(GameColors.HEADER(UiText.MainMenu.header))
-        println(UiText.MainMenu.description)
-        println(GameColors.READY("  [1] Start New Game"))
-        println("  [2] Continue (if save exists)")
-        println("  [3] How to Play")
-        println("  [Q] Quit")
-        println()
-        println(dim(UiText.MainMenu.prompt))
-        println(GameColors.HEADER(UiText.MainMenu.footer))
+        println(UiText.MainMenu)
         print("> ")
     }
 
     fun renderInitialTeaching() {
         clearScreen()
-        println(GameColors.TEACHING(UiText.InitialTeaching.header))
-
-        // Apply formatting to specific parts of the content
-        val lines = UiText.InitialTeaching.content.lines()
-        lines.forEach { line ->
-            when {
-                line.contains("✨ MELEE ATTACK") -> {
-                    val parts = line.split(" - ")
-                    println("  ${GameColors.READY(parts[0])} - ${parts.getOrNull(1) ?: ""}")
-                }
-                line.contains("💡 Key Concept") -> println("  ${GameColors.TEACHING(line.trim())}")
-                line.contains("Code Example:") -> println("  ${bold(line.trim())}")
-                line.contains("Limitation:") -> println("  ${GameColors.DAMAGE(line.trim())}")
-                line.contains("Real-world analogy:") -> println("  ${bold(line.trim())}")
-                line.trim().startsWith("fun ") || line.trim().startsWith("target.") ||
-                line.trim().startsWith("attack(") || line.trim().startsWith("}") ||
-                line.trim().startsWith("// Total") -> println(dim(line))
-                else -> println(line)
-            }
-        }
-
-        println(GameColors.TEACHING(UiText.InitialTeaching.footer))
+        println(UiText.InitialTeaching)
         print(UiText.InitialTeaching.prompt)
     }
 
     fun renderHowToPlay() {
         clearScreen()
-        println(GameColors.HEADER(UiText.HowToPlay.header))
-
-        // Apply formatting to specific parts of the content
-        val lines = UiText.HowToPlay.content.lines()
-        lines.forEach { line ->
-            when {
-                line.contains(":") && line.trim().matches(Regex("^[A-Z][A-Z ]+:$")) ->
-                    println("  ${bold(line.trim())}")
-                line.contains("parallel") -> {
-                    val updated = line.replace("parallel", GameColors.TEACHING("parallel"))
-                    println(updated)
-                }
-                line.contains("one-by-one") -> {
-                    val updated = line.replace("one-by-one", GameColors.DAMAGE("one-by-one"))
-                    println(updated)
-                }
-                line.contains("cast") -> {
-                    val updated = line.replace("cast", bold("cast"))
-                    println(updated)
-                }
-                else -> println(line)
-            }
-        }
-
-        println(GameColors.HEADER(UiText.HowToPlay.footer))
+        println(UiText.HowToPlay)
         print(UiText.HowToPlay.prompt)
     }
 
@@ -99,9 +46,9 @@ class ConsoleRenderer {
         clearScreen()
 
         // Header
-        println(GameColors.HEADER("═".repeat(65)))
-        println(GameColors.HEADER(UiText.Combat.headerPrefix + round))
-        println(GameColors.HEADER("═".repeat(65)))
+        println(generateSeparator())
+        println(GameColors.BRIGHT_CYAN(UiText.Combat.headerPrefix + round))
+        println(generateSeparator())
         println()
 
         // Enemy status
@@ -128,12 +75,12 @@ class ConsoleRenderer {
 
         // Action Points & Queue
         if (actionQueue != null) {
-            println(GameColors.BORDER("═".repeat(65)))
+            println(generateSeparator())
             val apUsed = actionQueue.actionPointsUsed
             val apMax = actionQueue.maxActionPoints
             val apRemaining = actionQueue.actionPointsRemaining
             val apBar = "█".repeat(apUsed) + "░".repeat(apRemaining)
-            println(GameColors.BORDER(UiText.Combat.actionPointsLabel) + GameColors.TEACHING(apBar) + " $apUsed/$apMax")
+            println(GameColors.BRIGHT_CYAN(UiText.Combat.actionPointsLabel) + GameColors.BRIGHT_CYAN(apBar) + " $apUsed/$apMax")
 
             if (!actionQueue.isEmpty) {
                 println(GameColors.READY(UiText.Combat.queuedLabel + actionQueue.getActionSummary()))
@@ -144,19 +91,21 @@ class ConsoleRenderer {
         }
 
         // Spell bar
-        println(GameColors.BORDER("═".repeat(65)))
-        println(GameColors.BORDER(UiText.Combat.spellBarLabel))
+        println(generateSeparator())
+        println(GameColors.BRIGHT_CYAN(UiText.Combat.spellBarLabel))
         renderSpellBar(player.unlockedSpells, player, actionQueue)
 
         // Combat log (last 10 messages to show execution details)
-        println(GameColors.BORDER("═".repeat(65)))
-        println(GameColors.BORDER(UiText.Combat.combatLogLabel))
+        println(generateSeparator())
+        println(GameColors.BRIGHT_CYAN(UiText.Combat.combatLogLabel))
         combatLog.takeLast(10).forEach { msg ->
             println("  $msg")
         }
-        println(GameColors.BORDER("═".repeat(65)))
+        println(GameColors.BRIGHT_CYAN("═".repeat(65)))
         print("> ")
     }
+
+    private fun generateSeparator(): String = GameColors.BRIGHT_CYAN("═".repeat(65))
 
     private fun renderHealthBar(
         label: String,
@@ -216,7 +165,6 @@ class ConsoleRenderer {
             is ShieldBarrier -> dim("[Job + cancellation]")
             is TimeWarp -> dim("[withContext]")
             is ChannelBlitz -> dim("[Channel]")
-            else -> ""
         }
     }
 
@@ -236,7 +184,7 @@ class ConsoleRenderer {
 
     fun renderLevelUp(player: Player, newSpell: Spell?) {
         clearScreen()
-        println(GameColors.TEACHING(UiText.SpellUnlock.header))
+        println(UiText.SpellUnlock.header)
         println()
         println(UiText.SpellUnlock.congratulationsMessage(player.level))
         println()
@@ -245,52 +193,28 @@ class ConsoleRenderer {
             renderSpellUnlock(newSpell)
         }
 
-        println(GameColors.TEACHING(UiText.SpellUnlock.footer))
+        println(UiText.SpellUnlock.footer)
         print(UiText.SpellUnlock.prompt)
     }
 
     private fun renderSpellUnlock(spell: Spell) {
-        println(GameColors.READY(UiText.SpellUnlock.newSpellMessage(spell.name)))
+        println(UiText.SpellUnlock.newSpellMessage(spell.name))
         println()
         println("  ${spell.description}")
         println()
 
-        // Get the teaching content based on spell type
-        val teachingText = when (spell) {
-            is Shockwave -> UiText.SpellUnlock.MeleeAttack.teaching
-            is Fireball -> UiText.SpellUnlock.Fireball.teaching
-            is IceBolt -> UiText.SpellUnlock.IceBolt.teaching
-            is LightningChain -> UiText.SpellUnlock.LightningChain.teaching
-            is PoisonCloud -> UiText.SpellUnlock.PoisonCloud.teaching
-            is ShieldBarrier -> UiText.SpellUnlock.ShieldBarrier.teaching
-            is TimeWarp -> UiText.SpellUnlock.TimeWarp.teaching
-            is ChannelBlitz -> UiText.SpellUnlock.ChannelBlitz.teaching
-            else -> ""
+        val teachingBlock = when (spell) {
+            is Shockwave -> UiText.SpellUnlock.MeleeAttack
+            is Fireball -> UiText.SpellUnlock.Fireball
+            is IceBolt -> UiText.SpellUnlock.IceBolt
+            is LightningChain -> UiText.SpellUnlock.LightningChain
+            is PoisonCloud -> UiText.SpellUnlock.PoisonCloud
+            is ShieldBarrier -> UiText.SpellUnlock.ShieldBarrier
+            is TimeWarp -> UiText.SpellUnlock.TimeWarp
+            is ChannelBlitz -> UiText.SpellUnlock.ChannelBlitz
         }
 
-        // Apply formatting to the teaching content
-        teachingText.lines().forEach { line ->
-            when {
-                line.contains("💡 Key Concept") || line.contains("💡 Synchronous") ->
-                    println("  ${GameColors.TEACHING(line.trim())}")
-                line.matches(Regex("^\\s*(Code Example:|vs\\. .*:|with .*:)\\s*$")) ->
-                    println("  ${bold(line.trim())}")
-                line.trim().startsWith("scope.") || line.trim().startsWith("launch") ||
-                line.trim().startsWith("val ") || line.trim().startsWith("delay") ||
-                line.trim().startsWith("target.") || line.trim().startsWith("player.") ||
-                line.trim().startsWith("}") || line.trim().startsWith("attack()") ||
-                line.trim().startsWith("async") || line.trim().startsWith("repeat") ||
-                line.trim().startsWith("emit") || line.trim().startsWith("for ") ||
-                line.trim().startsWith("damage") || line.trim().startsWith("channel") ||
-                line.trim().startsWith("Flow:") || line.trim().startsWith("Channel:") ||
-                line.trim().startsWith("withContext") || line.trim().startsWith("withTimeout") ||
-                line.trim().startsWith("try {") || line.trim().startsWith("catch") ||
-                line.trim().startsWith("while") || line.trim().startsWith("var ") ||
-                line.trim().startsWith("// ") ->
-                    println(dim(line))
-                else -> println(line)
-            }
-        }
+        println(teachingBlock)
         println()
     }
 
@@ -302,7 +226,7 @@ class ConsoleRenderer {
         val lines = UiText.Defeat.content.lines()
         lines.forEach { line ->
             when {
-                line.contains("ROGUE-LITE MECHANICS:") -> println(GameColors.TEACHING("  ${bold(line.trim())}"))
+                line.contains("ROGUE-LITE MECHANICS:") -> println(GameColors.BRIGHT_CYAN("  ${bold(line.trim())}"))
                 line.contains("BUT you keep all") -> {
                     val message = UiText.Defeat.spellsKeptMessage(player.unlockedSpells.size)
                     println("  • ${GameColors.READY(message)}")

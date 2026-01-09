@@ -1,8 +1,6 @@
 package ui
 
 import com.github.ajalt.mordant.rendering.TextColors.*
-import com.github.ajalt.mordant.rendering.TextColors
-import com.github.ajalt.mordant.rendering.TextStyles.*
 
 object GameColors {
     val PLAYER_HP = green
@@ -14,8 +12,6 @@ object GameColors {
     val COOLDOWN = gray
     val DAMAGE = brightRed
     val HEAL = brightGreen
-    val TEACHING = brightCyan
-    val HEADER = brightCyan
-    val BORDER = brightCyan
+    val BRIGHT_CYAN = brightCyan
     val WARNING = brightYellow
 }

@@ -41,7 +41,7 @@ class GameLoopTest {
         player = Player("Hero", stats)
 
         assertEquals(1, player.unlockedSpells.size)
-        assertEquals("Melee Attack", player.unlockedSpells[0].name)
+        assertEquals("Sync Blast", player.unlockedSpells[0].name)
     }
 
     @Test
@@ -126,7 +126,7 @@ class GameLoopTest {
         player.addExperience(100) // Level 2
 
         assertEquals(2, player.unlockedSpells.size)
-        assertEquals("Melee Attack", player.unlockedSpells[0].name)
+        assertEquals("Sync Blast", player.unlockedSpells[0].name)
         assertEquals("Fireball", player.unlockedSpells[1].name)
     }
 
@@ -177,7 +177,7 @@ class GameLoopTest {
 
         // Spells preserved
         assertEquals(3, player.unlockedSpells.size)
-        assertTrue(player.unlockedSpells.any { it.name == "Melee Attack" })
+        assertTrue(player.unlockedSpells.any { it.name == "Sync Blast" })
         assertTrue(player.unlockedSpells.any { it.name == "Fireball" })
         assertTrue(player.unlockedSpells.any { it.name == "Ice Bolt" })
     }
@@ -345,7 +345,7 @@ class GameLoopTest {
 
     @Test
     fun `spell registry returns correct spell for level`() {
-        assertEquals("Melee Attack", SpellRegistry.getSpellForLevel(1)?.name)
+        assertEquals("Sync Blast", SpellRegistry.getSpellForLevel(1)?.name)
         assertEquals("Fireball", SpellRegistry.getSpellForLevel(2)?.name)
         assertEquals("Ice Bolt", SpellRegistry.getSpellForLevel(3)?.name)
         assertEquals("Lightning Chain", SpellRegistry.getSpellForLevel(4)?.name)
